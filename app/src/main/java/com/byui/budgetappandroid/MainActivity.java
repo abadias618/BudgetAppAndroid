@@ -1,10 +1,11 @@
-package com.example.budgetappandroid;
+package com.byui.budgetappandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

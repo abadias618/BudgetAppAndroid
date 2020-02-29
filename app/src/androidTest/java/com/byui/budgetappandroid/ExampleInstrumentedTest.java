@@ -1,4 +1,4 @@
-package com.example.budgetappandroid;
+package com.byui.budgetappandroid;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.example.budgetappandroid", appContext.getPackageName());
+        assertEquals("com.e.budgetappandroid", appContext.getPackageName());
     }
 }

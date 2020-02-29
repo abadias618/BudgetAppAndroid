@@ -1,4 +1,4 @@
-package com.example.budgetappandroid;
+package com.byui.budgetappandroid;
 
 import org.junit.Test;
 
