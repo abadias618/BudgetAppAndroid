@@ -13,14 +13,3 @@
 .externalNativeBuild
 .cxx
 
-.idea/
-settings.gradle
-local.properties
-gradlew.bat
-gradlew
-gradle.properties
-gradle/
-build.gradle
-libs/
-proguard-rules.pro
-
