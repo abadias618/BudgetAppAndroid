@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //david push test
-    //Rachel push test
-    //Fernando push test
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 6243162... Push test
 }
