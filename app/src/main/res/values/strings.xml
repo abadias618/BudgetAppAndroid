@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">BudgetAppAndroid</string>
+
+    <string-array name="categories">
+        <item>Home</item>
+        <item>Health</item>
+        <item>Transport</item>
+        <item>Food</item>
+        <item>Groceries</item>
+        <item>Donation</item>
+    </string-array>
+
 </resources>
