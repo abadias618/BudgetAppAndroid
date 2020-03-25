@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUp extends AppCompatActivity {
 
-    EditText _emailInput , _passwordInput;
+    EditText _emailInput , _passwordInput, _currencyInput;
     TextView _signUpTitle, _loginSubtitle, _emailLabel, _passwordSubtitle, _loginLink;
     Button _submitButton;
     FirebaseAuth firebaseAuth;
@@ -30,6 +30,7 @@ public class SignUp extends AppCompatActivity {
 
         _emailInput = findViewById(R.id.emailInput);
         _passwordInput = findViewById(R.id.passwordInput);
+        _currencyInput = findViewById(R.id.currencyInput);
         _signUpTitle = findViewById(R.id.signUpTitle);
         _loginSubtitle = findViewById(R.id.loginSubtitle);
         _emailLabel = findViewById(R.id.emailLabel);
@@ -50,9 +51,10 @@ public class SignUp extends AppCompatActivity {
             public void onClick(View v) {
                 String email = _emailInput.getText().toString().trim();
                 String password = _passwordInput.getText().toString().trim();
+                String currency = _currencyInput.getText().toString().trim();
 
                 //check if the input fields are not empty
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) ) {
+                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(currency)) {
                     _emailInput.setError("You are missing something...");
                 }
                 //create a user on the firebase
@@ -62,6 +64,7 @@ public class SignUp extends AppCompatActivity {
                          if (task.isSuccessful()) {
                              Toast.makeText(SignUp.this, "User Created Successfully",
                                      Toast.LENGTH_SHORT).show();
+                             //TODO: Create currency variable and set it to the currency string
                              startActivity(new Intent(getApplicationContext(), MainActivity.class));
                          }
                          else {
