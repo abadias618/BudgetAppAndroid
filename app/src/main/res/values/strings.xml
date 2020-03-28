@@ -10,4 +10,9 @@
         <item>Donation</item>
     </string-array>
 
+    <string-array name="currencies">
+        <item>Euros</item>
+        <item>US Dollars</item>
+        <item>Aus Dollars</item>
+    </string-array>
 </resources>
