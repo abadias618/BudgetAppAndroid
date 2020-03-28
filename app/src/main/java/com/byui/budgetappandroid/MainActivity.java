@@ -1,10 +1,10 @@
 package com.byui.budgetappandroid;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -13,9 +13,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_entdata);
 
-        Spinner mySpinner = (Spinner) findViewById(R.id.spinner1);
+        Spinner mySpinner = findViewById(R.id.spinner1);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(MainActivity.this,
                 android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.categories));
