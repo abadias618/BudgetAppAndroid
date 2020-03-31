@@ -1,8 +1,5 @@
 package com.byui.budgetappandroid;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,6 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -58,20 +58,19 @@ public class SignUp extends AppCompatActivity {
                     _emailInput.setError("You are missing something...");
                 }
                 //create a user on the firebase
-                 firebaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                     @Override
-                     public void onComplete(@NonNull Task<AuthResult> task) {
-                         if (task.isSuccessful()) {
-                             Toast.makeText(SignUp.this, "User Created Successfully",
-                                     Toast.LENGTH_SHORT).show();
-                             //TODO: Create currency variable and set it to the currency string
-                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                         }
-                         else {
-                             Toast.makeText(SignUp.this, "An Error Occurred"+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                         }
-                     }
-                 });
+                firebaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(SignUp.this, "User Created Successfully",
+                                    Toast.LENGTH_SHORT).show();
+                            //TODO: Create currency variable and set it to the currency string
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        } else {
+                            Toast.makeText(SignUp.this, "An Error Occurred"+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
             }
         });
@@ -83,5 +82,14 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
+    }
+
+    public static class showdata extends AppCompatActivity {
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_showdata);
+        }
     }
 }
