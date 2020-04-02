@@ -9,6 +9,6 @@ public class showdata extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_showdata);
+        //setContentView(R.layout.activity_showdata);
     }
 }
