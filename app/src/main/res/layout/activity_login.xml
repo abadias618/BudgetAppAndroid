@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/wallpaper_login_img"
+    android:background="@drawable/background_img"
     tools:context=".Login">
 
     <EditText
@@ -36,7 +36,7 @@
         android:layout_marginEnd="102dp"
         android:layout_marginRight="102dp"
         android:layout_marginBottom="8dp"
-        android:text="Budget Track"
+        android:text="Budget Tracker"
         android:textColor="#ffffff"
         android:textSize="26sp"
         app:layout_constraintBottom_toTopOf="@+id/loginSubtitle"
