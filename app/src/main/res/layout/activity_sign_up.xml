@@ -18,7 +18,7 @@
         android:layout_marginRight="99dp"
         android:layout_marginBottom="20dp"
         android:ems="10"
-        android:hint="@gmail.com"
+        android:hint="/@gmail.com"
         android:inputType="textPersonName"
         android:textColorHint="#ffffff"
         android:textColor="#ffffff"
@@ -174,7 +174,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/submitButton" />
 
-    <EditText
+    <Spinner
         android:id="@+id/currencyInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

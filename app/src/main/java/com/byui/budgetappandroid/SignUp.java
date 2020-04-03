@@ -11,18 +11,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Spinner;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+//import com.google.firebase.firestore.CollectionReference;
 
 public class SignUp extends AppCompatActivity {
 
-    EditText _emailInput , _passwordInput, _currencyInput;
+    EditText _emailInput , _passwordInput;
     TextView _signUpTitle, _loginSubtitle, _emailLabel, _passwordSubtitle, _loginLink;
-    Button _submitButton;
+    Button _submitButton, _settings;
     FirebaseAuth firebaseAuth;
+    Spinner _currencyInput;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,10 +54,9 @@ public class SignUp extends AppCompatActivity {
             public void onClick(View v) {
                 String email = _emailInput.getText().toString().trim();
                 String password = _passwordInput.getText().toString().trim();
-                String currency = _currencyInput.getText().toString().trim();
 
                 //check if the input fields are not empty
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(currency)) {
+                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                     _emailInput.setError("You are missing something...");
                 }
                 //create a user on the firebase
@@ -64,7 +66,7 @@ public class SignUp extends AppCompatActivity {
                          if (task.isSuccessful()) {
                              Toast.makeText(SignUp.this, "User Created Successfully",
                                      Toast.LENGTH_SHORT).show();
-                             //TODO: Create currency variable and set it to the currency string
+                          //   firebaseAuth.collection("Users");
                              startActivity(new Intent(getApplicationContext(), MainActivity.class));
                          }
                          else {
@@ -82,6 +84,20 @@ public class SignUp extends AppCompatActivity {
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), Login.class));
             }
+        });
+
+
+
+
+
+        _settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                startActivity((new Intent(getApplicationContext(), Settings.class)));
+                finish();
+
+            }
+
         });
 
     }
