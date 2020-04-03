@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+//import com.google.firebase.firestore.CollectionReference;
 
 public class SignUp extends AppCompatActivity {
 
@@ -39,7 +40,6 @@ public class SignUp extends AppCompatActivity {
         _passwordSubtitle = findViewById(R.id.passwordLabel);
         _loginLink = findViewById(R.id.loginLink);
         _submitButton = findViewById(R.id.submitButton);
-        _settings = findViewById(R.id.settingsButton);
 
         firebaseAuth = FirebaseAuth.getInstance();
         //if user is logged in re-route to main activity
@@ -66,7 +66,7 @@ public class SignUp extends AppCompatActivity {
                          if (task.isSuccessful()) {
                              Toast.makeText(SignUp.this, "User Created Successfully",
                                      Toast.LENGTH_SHORT).show();
-                             //TODO: Create currency variable and set it to the currency string
+                          //   firebaseAuth.collection("Users");
                              startActivity(new Intent(getApplicationContext(), MainActivity.class));
                          }
                          else {

@@ -69,9 +69,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
 
                     //save current currency from Firebase to a variable
                     //save new currency in a variable (returned by onItemSelected)
-                    //call API
-                    //use API to load just the new currency's conversion rate
-
+                    //call API through currencyConversion()
                 }
 
                 startActivity((new Intent(getApplicationContext(), MainActivity.class)));
