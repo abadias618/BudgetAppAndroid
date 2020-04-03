@@ -8,6 +8,7 @@
         <item>Food</item>
         <item>Groceries</item>
         <item>Donation</item>
+        <item>Other</item>
     </string-array>
 
 </resources>

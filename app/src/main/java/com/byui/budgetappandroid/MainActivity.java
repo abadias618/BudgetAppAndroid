@@ -1,7 +1,10 @@
 package com.byui.budgetappandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,10 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
 
+    Button _newExpense;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_entdata);
+        setContentView(R.layout.activity_main);
+
+        _newExpense = findViewById(R.id.newExpenseButton);
+
+        /*
 
         Spinner mySpinner = findViewById(R.id.spinner1);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -25,6 +34,13 @@ public class MainActivity extends AppCompatActivity {
                 mySpinner.setAdapter(myAdapter);
 
 
+         */
+        _newExpense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), NewExpense.class));
+            }
+        });
 
     }
 

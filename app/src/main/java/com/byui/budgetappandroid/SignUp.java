@@ -76,6 +76,7 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
+        //link to the login page
         _loginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

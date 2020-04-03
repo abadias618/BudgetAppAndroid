@@ -1,14 +1,14 @@
-package com.example.budgetappandroid;
-
-import android.os.Bundle;
+package com.byui.budgetappandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class showdata extends AppCompatActivity {
+import android.os.Bundle;
+
+public class Main2Activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_showdata);
+        setContentView(R.layout.activity_main2);
     }
 }
