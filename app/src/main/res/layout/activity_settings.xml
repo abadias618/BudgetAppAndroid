@@ -60,6 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <Spinner
         android:id="@+id/currencyInput"
         android:layout_width="131dp"
@@ -68,5 +69,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+
+    />
 </androidx.constraintlayout.widget.ConstraintLayout>

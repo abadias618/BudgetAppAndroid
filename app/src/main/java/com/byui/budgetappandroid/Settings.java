@@ -19,7 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.gson.Gson;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -31,7 +32,9 @@ import java.util.List;
 
 public class Settings extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
+    String _oldCurrency;
     private String pickedCurrency;
+    private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
 
 
         //The user's login info
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         //If the user's not logged in, go back to the login page. Otherwise, continue.
 /*        if (firebaseAuth.getCurrentUser() == null) {
@@ -49,10 +52,21 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             finish();
         }
 */
+
+
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //save current currency from Firebase to a variable
+//        _oldCurrency = _database.child("users").child(userId).child("currency").getValue(pickedCurrency);
+
         //Retrieve any input from the "currency" field
         Spinner spinner = findViewById(R.id.currencyInput);
-        ArrayAdapter<CharSequence> adapter =
-                ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
+        List<String> currencies = new ArrayList<>();
+        currencies.add("Euros");
+        currencies.add("Aus Dollars");
+        currencies.add("US Dollars");
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         //Listen for when/if the user selects an item
@@ -67,8 +81,10 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             public void onClick(View view){
                 if(pickedCurrency != null) {
 
-                    //save current currency from Firebase to a variable
                     //save new currency in a variable (returned by onItemSelected)
+ //                   onItemSelected(adapter, );
+                    _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
+
                     //call API through currencyConversion()
                 }
 
