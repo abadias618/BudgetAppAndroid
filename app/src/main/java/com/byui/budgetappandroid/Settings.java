@@ -2,10 +2,10 @@ package com.byui.budgetappandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +31,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
 
     String _oldCurrency;
     private String pickedCurrency;
+    private Button _returnButton, _submitButton;
     private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
     private FirebaseDatabase _databaseNoRef = FirebaseDatabase.getInstance();
     String userId;
@@ -41,6 +42,8 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        _returnButton = findViewById(R.id.returnFromSettings);
+        _submitButton = findViewById(R.id.submit);
         Intent intent = getIntent();
 
 
@@ -51,15 +54,14 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         if (firebaseAuth.getCurrentUser() == null) {
             startActivity((new Intent(getApplicationContext(), Login.class)));
             finish();
-        }
-        else{
+        } else {
             userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference user = _databaseNoRef.getReference("users");
             user.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                        if(ds.child("userId").getValue().equals(userId)){
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if (ds.child("userId").getValue().equals(userId)) {
                             _oldCurrency = ds.child("currency").getValue(String.class);
                             break;
                         }
@@ -72,8 +74,6 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 }
             });
         }
-
-
 
 
         //Retrieve any input from the "currency" field
@@ -91,21 +91,17 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         //Listen for when/if the user selects an item
         spinner.setOnItemSelectedListener(this);
 
-
-        final TextView _submitButton = findViewById(R.id.submitButton);
-
-
         _submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                if(pickedCurrency != null) {
+//                if(pickedCurrency != null) {
 
                     //save new currency in a variable (returned by onItemSelected)
  //                   onItemSelected(adapter, );
-                    _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
+//                    _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
 
                     //call API through currencyConversion()
-                }
+ //               }
 
                 startActivity((new Intent(getApplicationContext(), MainActivity.class)));
                 finish();
@@ -113,7 +109,15 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             }
 
         });
+        _returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                startActivity((new Intent(getApplicationContext(), MainActivity.class)));
+                finish();
+            }
 
+        });
+/*
     }
 
     public void currencyConversion(String oldCurrency, String newCurrency) throws IOException {
@@ -134,6 +138,14 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         Toast.makeText(Settings.this, "New",
                 Toast.LENGTH_SHORT).show();
 
+        _returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        });
+
+ */
     }
 
     @Override
@@ -159,4 +171,5 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
 }
