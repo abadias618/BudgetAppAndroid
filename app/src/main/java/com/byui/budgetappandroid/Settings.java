@@ -1,30 +1,22 @@
 package com.byui.budgetappandroid;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View;
-import com.google.android.gms.tasks.OnCompleteListener;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +65,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         spinner.setOnItemSelectedListener(this);
 
 
-        final TextView _submitButton = findViewById(R.id.submit);
+        final TextView _submitButton = findViewById(R.id.submitButton);
 
 
         _submitButton.setOnClickListener(new View.OnClickListener() {
