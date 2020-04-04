@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/wallpaper_login_img"
+    android:background="@drawable/background_img"
     tools:context=".Login">
 
     <EditText
@@ -20,11 +20,14 @@
         android:hint="@gmail.com"
         android:inputType="textPersonName"
         android:textColorHint="#ffffff"
+        android:textColor="#ffffff"
         android:theme="@style/editTextStyle"
+        android:drawableRight="@drawable/ic_email_black_24dp"
         app:layout_constraintBottom_toTopOf="@+id/passwordLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/emailLabel"
+        />
 
     <TextView
         android:id="@+id/signUpTitle"
@@ -36,9 +39,9 @@
         android:layout_marginEnd="102dp"
         android:layout_marginRight="102dp"
         android:layout_marginBottom="8dp"
-        android:text="Budget Track"
+        android:text="Budget Tracker"
         android:textColor="#ffffff"
-        android:textSize="26sp"
+        android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/loginSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -109,7 +112,9 @@
         android:hint="**********"
         android:inputType="textPersonName"
         android:textColorHint="#ffffff"
+        android:textColor="#ffffff"
         android:theme="@style/editTextStyle"
+        android:drawableRight="@drawable/ic_lock_black_24dp"
         app:layout_constraintBottom_toTopOf="@+id/submitButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
