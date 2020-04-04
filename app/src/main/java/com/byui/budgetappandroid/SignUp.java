@@ -24,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-//import com.google.firebase.firestore.CollectionReference;
 
 public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 

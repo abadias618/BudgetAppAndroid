@@ -41,7 +41,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), NewExpense.class));
             }
         });
-
+        _newExpense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), NewExpense.class));
+            }
+        });
     }
 
     //david push test
