@@ -2,6 +2,7 @@ package com.byui.budgetappandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -9,11 +10,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -27,6 +32,8 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
     String _oldCurrency;
     private String pickedCurrency;
     private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
+    private FirebaseDatabase _databaseNoRef = FirebaseDatabase.getInstance();
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,25 +41,45 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        Intent intent = getIntent();
+
 
         //The user's login info
         final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         //If the user's not logged in, go back to the login page. Otherwise, continue.
-/*        if (firebaseAuth.getCurrentUser() == null) {
+        if (firebaseAuth.getCurrentUser() == null) {
             startActivity((new Intent(getApplicationContext(), Login.class)));
             finish();
         }
-*/
+        else{
+            userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference user = _databaseNoRef.getReference("users");
+            user.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if(ds.child("userId").getValue().equals(userId)){
+                            _oldCurrency = ds.child("currency").getValue(String.class);
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
 
 
-        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //save current currency from Firebase to a variable
-//        _oldCurrency = _database.child("users").child(userId).child("currency").getValue(pickedCurrency);
+
 
         //Retrieve any input from the "currency" field
         Spinner spinner = findViewById(R.id.currencyInput);
         List<String> currencies = new ArrayList<>();
+        currencies.add("Select");
         currencies.add("Euros");
         currencies.add("Aus Dollars");
         currencies.add("US Dollars");
@@ -119,8 +146,10 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             case "Aus Dollars":
                 pickedCurrency = "AUD";
                 break;
-            default:
+            case "Euros":
                 pickedCurrency = "EUR";
+            default:
+                pickedCurrency = _oldCurrency;
         }
         Toast.makeText(Settings.this, pickedCurrency,
                 Toast.LENGTH_SHORT).show();

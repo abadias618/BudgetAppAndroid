@@ -22,8 +22,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
@@ -60,6 +64,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         }
 
         List<String> currencies = new ArrayList<>();
+        currencies.add("Select");
         currencies.add("Euros");
         currencies.add("Aus Dollars");
         currencies.add("US Dollars");
@@ -94,6 +99,8 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
 
                              String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                              _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
+                             ArrayList<Expense> expenses = new ArrayList<Expense>();
+                             _database.child("users").child(userId).child("expenses").setValue(expenses);
                              startActivity(new Intent(getApplicationContext(), MainActivity.class));
                          }
                          else {
