@@ -29,7 +29,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
 
     EditText _emailInput , _passwordInput;
     TextView _signUpTitle, _loginSubtitle, _emailLabel, _passwordSubtitle, _loginLink;
-    Button _submitButton, _settings;
+    Button _submitButton;
     FirebaseAuth firebaseAuth;
     Spinner _currencyInput;
     private DatabaseReference _database;
@@ -118,15 +118,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
 
 
 
-        _settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                startActivity((new Intent(getApplicationContext(), Settings.class)));
-                finish();
 
-            }
-
-        });
 
 
     }
