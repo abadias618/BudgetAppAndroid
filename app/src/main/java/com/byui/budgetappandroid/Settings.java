@@ -106,8 +106,8 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                             for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                                 Expense expense = snapshot.getValue(Expense.class);
 
-                                Toast.makeText(Settings.this, expense.getCategory(),
-                                        Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(Settings.this, expense.getCategory(),
+//                                        Toast.LENGTH_SHORT).show();
                             }
                         }
 
