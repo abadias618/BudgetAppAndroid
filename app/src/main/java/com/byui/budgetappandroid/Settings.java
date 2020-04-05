@@ -1,30 +1,27 @@
 package com.byui.budgetappandroid;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View;
-import com.google.android.gms.tasks.OnCompleteListener;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +31,10 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
 
     String _oldCurrency;
     private String pickedCurrency;
+    private Button _returnButton, _submitButton;
     private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
+    private FirebaseDatabase _databaseNoRef = FirebaseDatabase.getInstance();
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,25 +42,44 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        _returnButton = findViewById(R.id.returnFromSettings);
+        _submitButton = findViewById(R.id.submit);
+        Intent intent = getIntent();
+
 
         //The user's login info
         final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         //If the user's not logged in, go back to the login page. Otherwise, continue.
-/*        if (firebaseAuth.getCurrentUser() == null) {
+        if (firebaseAuth.getCurrentUser() == null) {
             startActivity((new Intent(getApplicationContext(), Login.class)));
             finish();
+        } else {
+            userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference user = _databaseNoRef.getReference("users");
+            user.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if (ds.child("userId").getValue().equals(userId)) {
+                            _oldCurrency = ds.child("currency").getValue(String.class);
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
-*/
 
-
-        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //save current currency from Firebase to a variable
-//        _oldCurrency = _database.child("users").child(userId).child("currency").getValue(pickedCurrency);
 
         //Retrieve any input from the "currency" field
         Spinner spinner = findViewById(R.id.currencyInput);
         List<String> currencies = new ArrayList<>();
+        currencies.add("Select");
         currencies.add("Euros");
         currencies.add("Aus Dollars");
         currencies.add("US Dollars");
@@ -72,21 +91,17 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         //Listen for when/if the user selects an item
         spinner.setOnItemSelectedListener(this);
 
-
-        final TextView _submitButton = findViewById(R.id.submit);
-
-
         _submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                if(pickedCurrency != null) {
+//                if(pickedCurrency != null) {
 
                     //save new currency in a variable (returned by onItemSelected)
  //                   onItemSelected(adapter, );
-                    _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
+//                    _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
 
                     //call API through currencyConversion()
-                }
+ //               }
 
                 startActivity((new Intent(getApplicationContext(), MainActivity.class)));
                 finish();
@@ -94,7 +109,15 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             }
 
         });
+        _returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                startActivity((new Intent(getApplicationContext(), MainActivity.class)));
+                finish();
+            }
 
+        });
+/*
     }
 
     public void currencyConversion(String oldCurrency, String newCurrency) throws IOException {
@@ -115,6 +138,14 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         Toast.makeText(Settings.this, "New",
                 Toast.LENGTH_SHORT).show();
 
+        _returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        });
+
+ */
     }
 
     @Override
@@ -127,8 +158,10 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             case "Aus Dollars":
                 pickedCurrency = "AUD";
                 break;
-            default:
+            case "Euros":
                 pickedCurrency = "EUR";
+            default:
+                pickedCurrency = _oldCurrency;
         }
         Toast.makeText(Settings.this, pickedCurrency,
                 Toast.LENGTH_SHORT).show();
@@ -138,4 +171,5 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
 }
