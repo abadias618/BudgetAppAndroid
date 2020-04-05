@@ -77,15 +77,6 @@
         android:text="Total Debt/Savings:"
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" /><![CDATA[
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-
-
-    app:layout_constraintTop_toTopOf="parent" />
-
-
-
-
-
-]]>
 </androidx.constraintlayout.widget.ConstraintLayout>
