@@ -64,6 +64,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         currencies.add("Aus Dollars");
         currencies.add("US Dollars");
 
+        //Spinner to select the currency and register it to your account
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

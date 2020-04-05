@@ -9,10 +9,12 @@ import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 
 public class MainActivity extends AppCompatActivity {
 
-
+    //link buttons
     Button _newExpense;
 
     @Override
@@ -47,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), NewExpense.class));
             }
         });
+    }
+
+    //when the app is destroyed it automatically signs you out
+    @Override
+    protected void onDestroy() {
+        FirebaseAuth.getInstance().signOut();
+        super.onDestroy();
     }
 
     //david push test

@@ -1,17 +1,45 @@
 package com.byui.budgetappandroid;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class Expense {
-    private String user;
     private String date;
     private String name;
-    private double amount;
-    private int id;
+    private float amount;
+    private String category;
 
-    public Expense(String user, String date, String name, double amount, int id) {
-        this.user = user;
+    public Expense() {
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public float getAmount() {
+        return amount;
+    }
+
+    public void setAmount(float amount) {
         this.amount = amount;
-        this.id = id;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }
