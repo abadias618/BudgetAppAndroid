@@ -76,7 +76,7 @@
         android:layout_marginRight="105dp"
         android:ems="10"
         android:hint="How much was it?"
-        android:inputType="textPersonName"
+        android:inputType="numberDecimal"
         android:textColor="#ffffff"
         android:textColorHint="#ffffff"
         android:theme="@style/editTextStyle"

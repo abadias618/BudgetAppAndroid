@@ -56,8 +56,18 @@ public class NewExpense extends AppCompatActivity {
         //Database handle
         reference = FirebaseDatabase.getInstance().getReference();
 
+        //set values
+        String expenseName = _expenseName.getText().toString().trim();
+        String expenseDate = _expenseDate.getText().toString().trim();
+        Float expenseAmount = Float.parseFloat(_expenseAmount.getText().toString().trim());
+        String categorySpinner = _categorySpinner.toString().trim();
 
-
+        //create an object to hold all those values
+        final Expense expense = new Expense();
+        expense.setDate(expenseDate);
+        expense.setName(expenseName);
+        expense.setAmount(expenseAmount);
+        expense.setCategory(categorySpinner);
 
         //insert values into database when "Record" button is pressed
 
@@ -65,17 +75,7 @@ public class NewExpense extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String expenseName = _expenseName.toString().trim();
-                String expenseDate = _expenseDate.toString().trim();
-                Float expenseAmount = Float.parseFloat(_expenseAmount.toString().trim());
-                String categorySpinner = _categorySpinner.toString().trim();
 
-                //create an object to hold all those values
-                Expense expense = new Expense();
-                expense.setDate(expenseDate);
-                expense.setName(expenseName);
-                expense.setAmount(expenseAmount);
-                expense.setCategory(categorySpinner);
 
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 reference.child("users").child(userId).child("expense").setValue(expense);
