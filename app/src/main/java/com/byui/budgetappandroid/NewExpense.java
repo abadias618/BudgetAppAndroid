@@ -110,8 +110,7 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
                 Toast.makeText(NewExpense.this, "Inserted Successfully...", Toast.LENGTH_SHORT).show();
                 //store the updated record_number in firebase
                 reference.child("users").child(_userId).child("record_number").setValue(recordNumber);
-                //restore
-                //startActivity(new Intent(getApplicationContext(), NewExpense.class));
+
             }
         });
 

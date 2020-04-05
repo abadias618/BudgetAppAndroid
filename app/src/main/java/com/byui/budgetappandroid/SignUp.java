@@ -99,7 +99,10 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                           //   firebaseAuth.collection("Users");
 
                              String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                             //create currency node for the user
                              _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
+                             //create default transaction number for the user
+                             _database.child("users").child(userId).child("record_number").setValue(0);
                              ArrayList<Expense> expenses = new ArrayList<Expense>();
                              _database.child("users").child(userId).child("expenses").setValue(expenses);
                              startActivity(new Intent(getApplicationContext(), MainActivity.class));

@@ -26,19 +26,6 @@ public class MainActivity extends AppCompatActivity {
         _newExpense = findViewById(R.id.newExpenseButton);
         _settings = findViewById(R.id.settings);
 
-        /*
-
-        Spinner mySpinner = findViewById(R.id.spinner1);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(MainActivity.this,
-                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.categories));
-        // specify adapter to dropdown list
-                myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                //This line allow the adapter to show the adapter inside the spinner.
-                mySpinner.setAdapter(myAdapter);
-
-
-         */
         _newExpense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     //when the app is destroyed it automatically signs you out
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         FirebaseAuth.getInstance().signOut();
     }
 
