@@ -31,6 +31,7 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
     //you get the spinner value from a function so you don't need a Spinner element
     String _categorySpinner;
     Button _submitExpense;
+    Button _returnButton;
 
     //firebase
     DatabaseReference reference;
@@ -61,6 +62,7 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
         _expenseDate = findViewById(R.id.expenseDate);
         _expenseAmount = findViewById(R.id.expenseAmount);
         _submitExpense = findViewById(R.id.submitExpense);
+        _returnButton = findViewById(R.id.returnFromNew);
 
         //Database handle
         reference = FirebaseDatabase.getInstance().getReference();
@@ -103,7 +105,8 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
                 expense.setCategory(_categorySpinner);
 
                 //insert object into Firebase
-                reference.child("users").child(_userId).child("expense_"+(++recordNumber)).setValue(expense);
+                reference.child("users").child(_userId).child("expenses").child("expense_" + (++recordNumber)).setValue(expense);
+//                reference.child("users").child(_userId).child("expense_"+(++recordNumber)).setValue(expense);
                 Toast.makeText(NewExpense.this, "Inserted Successfully...", Toast.LENGTH_SHORT).show();
                 //store the updated record_number in firebase
                 reference.child("users").child(_userId).child("record_number").setValue(recordNumber);
@@ -115,6 +118,13 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
             }
         });
 
+        _returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                finish();
+            }
+        });
     }
 
     @Override

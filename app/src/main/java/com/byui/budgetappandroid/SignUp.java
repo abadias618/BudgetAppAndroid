@@ -64,7 +64,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         }
 
         List<String> currencies = new ArrayList<>();
-        currencies.add("Select");
+        currencies.add("Select Currency");
         currencies.add("Euros");
         currencies.add("Aus Dollars");
         currencies.add("US Dollars");
