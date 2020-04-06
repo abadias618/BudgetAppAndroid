@@ -64,7 +64,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         }
 
         List<String> currencies = new ArrayList<>();
-        currencies.add("Select");
+        currencies.add("Select Currency");
         currencies.add("Euros");
         currencies.add("Aus Dollars");
         currencies.add("US Dollars");
@@ -99,9 +99,14 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                           //   firebaseAuth.collection("Users");
 
                              String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                             //create currency node for the user
                              _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
+                             //create default transaction number for the user
+                             _database.child("users").child(userId).child("record_number").setValue(0);
                              ArrayList<Expense> expenses = new ArrayList<Expense>();
+                             //TODO: the next line of code isn't working
                              _database.child("users").child(userId).child("expenses").setValue(expenses);
+                             //redirect to main class after Sign-up process is complete
                              startActivity(new Intent(getApplicationContext(), MainActivity.class));
                          }
                          else {

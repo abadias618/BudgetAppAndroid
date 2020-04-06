@@ -30,8 +30,8 @@ import java.util.List;
 public class Settings extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     String _oldCurrency;
-    private String pickedCurrency;
-    private Button _returnButton, _submitButton;
+    private String _pickedCurrency;
+    private Button _returnButton, _submitButton, _logoutButton;
     private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
     private FirebaseDatabase _databaseNoRef = FirebaseDatabase.getInstance();
     String userId;
@@ -44,6 +44,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
 
         _returnButton = findViewById(R.id.returnFromSettings);
         _submitButton = findViewById(R.id.submit);
+        _logoutButton = findViewById(R.id.logout);
         Intent intent = getIntent();
 
 
@@ -54,26 +55,26 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         if (firebaseAuth.getCurrentUser() == null) {
             startActivity((new Intent(getApplicationContext(), Login.class)));
             finish();
-        } else {
-            userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            DatabaseReference user = _databaseNoRef.getReference("users");
-            user.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        if (ds.child("userId").getValue().equals(userId)) {
-                            _oldCurrency = ds.child("currency").getValue(String.class);
-                            break;
-                        }
+        }
+
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final DatabaseReference user = _databaseNoRef.getReference("users");
+        user.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.child("userId").getValue().equals(userId)) {
+                        _oldCurrency = ds.child("currency").getValue(String.class);
+                        break;
                     }
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
-            });
-        }
+            }
+        });
 
 
         //Retrieve any input from the "currency" field
@@ -84,7 +85,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         currencies.add("Aus Dollars");
         currencies.add("US Dollars");
 
-        ArrayAdapter<String> adapter =
+        final ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
@@ -94,14 +95,32 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         _submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-//                if(pickedCurrency != null) {
+                if(_pickedCurrency != null) {
 
                     //save new currency in a variable (returned by onItemSelected)
- //                   onItemSelected(adapter, );
-//                    _database.child("users").child(userId).child("currency").setValue(pickedCurrency);
-
+                    user.child("currency").setValue(_pickedCurrency);
                     //call API through currencyConversion()
- //               }
+                    user.child("expenses").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                Expense expense = snapshot.getValue(Expense.class);
+
+//                                Toast.makeText(Settings.this, expense.getCategory(),
+//                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+//                    user.getRef("currency");
+//                    for(ArrayList expense : user.child("expenses")){
+//                  }
+                }
 
                 startActivity((new Intent(getApplicationContext(), MainActivity.class)));
                 finish();
@@ -117,7 +136,16 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             }
 
         });
-/*
+
+        _logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+                firebaseAuth.signOut();
+                startActivity(new Intent(getApplicationContext(), Login.class));
+                finish();
+            }
+        });
     }
 
     public void currencyConversion(String oldCurrency, String newCurrency) throws IOException {
@@ -138,14 +166,6 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         Toast.makeText(Settings.this, "New",
                 Toast.LENGTH_SHORT).show();
 
-        _returnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-            }
-        });
-
- */
     }
 
     @Override
@@ -153,17 +173,17 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         String selection = ((TextView)view).getText().toString();
         switch (selection) {
             case "US Dollars":
-                pickedCurrency = "USD";
+                _pickedCurrency = "USD";
                 break;
             case "Aus Dollars":
-                pickedCurrency = "AUD";
+                _pickedCurrency = "AUD";
                 break;
             case "Euros":
-                pickedCurrency = "EUR";
+                _pickedCurrency = "EUR";
             default:
-                pickedCurrency = _oldCurrency;
+                _pickedCurrency = _oldCurrency;
         }
-        Toast.makeText(Settings.this, pickedCurrency,
+        Toast.makeText(Settings.this, _pickedCurrency,
                 Toast.LENGTH_SHORT).show();
     }
 

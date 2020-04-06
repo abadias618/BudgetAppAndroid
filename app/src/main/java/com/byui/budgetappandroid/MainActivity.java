@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     //link buttons
     Button _newExpense;
     Button _settings;
+    Button _viewBudget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,20 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
         _newExpense = findViewById(R.id.newExpenseButton);
         _settings = findViewById(R.id.settings);
+        _viewBudget = findViewById(R.id.viewBudgetButton);
 
-        /*
-
-        Spinner mySpinner = findViewById(R.id.spinner1);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(MainActivity.this,
-                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.categories));
-        // specify adapter to dropdown list
-                myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                //This line allow the adapter to show the adapter inside the spinner.
-                mySpinner.setAdapter(myAdapter);
-
-
-         */
         _newExpense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,13 +41,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), Settings.class));
             }
         });
+
+        _viewBudget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), ViewBudget.class));
+            }
+        });
     }
 
     //when the app is destroyed it automatically signs you out
     @Override
     protected void onDestroy() {
-        FirebaseAuth.getInstance().signOut();
         super.onDestroy();
+        FirebaseAuth.getInstance().signOut();
     }
 
     //david push test
