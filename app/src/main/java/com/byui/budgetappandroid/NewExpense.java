@@ -45,23 +45,18 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
         //SPINNER
         // Spinner element
         Spinner mySpinner = findViewById(R.id.categorySpinner);
-
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(NewExpense.this,
                 android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.categories));
-
         // specify adapter to dropdown list
         myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         //This line allows the adapter to show the adapter inside the spinner.
         mySpinner.setAdapter(myAdapter);
-
         //check changes in the spinner
         mySpinner.setOnItemSelectedListener(this);
 
 
         //get values
-
         _expenseName = findViewById(R.id.expenseName);
         _expenseDate = findViewById(R.id.expenseDate);
         _expenseAmount = findViewById(R.id.expenseAmount);
@@ -95,8 +90,9 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
                 //set values
                 String expenseName = _expenseName.getText().toString().trim();
                 String expenseDate = _expenseDate.getText().toString().trim();
-                //TODO: round the float to 2 or 3 decimals
-                Float expenseAmount = Float.parseFloat(_expenseAmount.getText().toString().trim());
+                double expenseAmount = Float.parseFloat(_expenseAmount.getText().toString().trim());
+                //round the float to 2 decimals
+                expenseAmount = Math.round(expenseAmount*100.0)/100.0;
 
                 //create an object to hold all those values
                 Expense expense = new Expense();
@@ -105,12 +101,17 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
                 expense.setAmount(expenseAmount);
                 //TODO: this might be a problem if the user clicks on the button before selecting something in the Spinner
                 expense.setCategory(_categorySpinner);
+
                 //insert object into Firebase
                 reference.child("users").child(_userId).child("expense_"+(++recordNumber)).setValue(expense);
                 Toast.makeText(NewExpense.this, "Inserted Successfully...", Toast.LENGTH_SHORT).show();
                 //store the updated record_number in firebase
                 reference.child("users").child(_userId).child("record_number").setValue(recordNumber);
 
+                //reset the fields
+                _expenseName.getText().clear();
+                _expenseDate.getText().clear();
+                _expenseAmount.getText().clear();
             }
         });
 

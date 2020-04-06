@@ -104,7 +104,9 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                              //create default transaction number for the user
                              _database.child("users").child(userId).child("record_number").setValue(0);
                              ArrayList<Expense> expenses = new ArrayList<Expense>();
+                             //TODO: the next line of code isn't working
                              _database.child("users").child(userId).child("expenses").setValue(expenses);
+                             //redirect to main class after Sign-up process is complete
                              startActivity(new Intent(getApplicationContext(), MainActivity.class));
                          }
                          else {

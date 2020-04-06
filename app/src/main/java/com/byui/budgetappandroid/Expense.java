@@ -5,7 +5,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class Expense {
     private String date;
     private String name;
-    private float amount;
+    private double amount;
     private String category;
 
     public Expense() {
@@ -27,11 +27,11 @@ public class Expense {
         this.name = name;
     }
 
-    public float getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

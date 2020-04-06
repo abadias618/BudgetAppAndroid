@@ -56,7 +56,7 @@
         android:layout_marginEnd="107dp"
         android:layout_marginRight="107dp"
         android:ems="10"
-        android:hint="What received or spent in?"
+        android:hint="What did you spend in?"
         android:inputType="textPersonName"
         android:textColor="#ffffff"
         android:textColorHint="#ffffff"
