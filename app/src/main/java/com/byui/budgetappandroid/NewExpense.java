@@ -79,7 +79,7 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                System.out.println("The read failed: " + databaseError.getCode());
             }
         });
 
@@ -98,6 +98,7 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
 
                 //create an object to hold all those values
                 Expense expense = new Expense();
+                expense.setId(++recordNumber);
                 expense.setDate(expenseDate);
                 expense.setName(expenseName);
                 expense.setAmount(expenseAmount);
@@ -105,8 +106,8 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
                 expense.setCategory(_categorySpinner);
 
                 //insert object into Firebase
-                reference.child("users").child(_userId).child("expenses").child("expense_" + (++recordNumber)).setValue(expense);
-//                reference.child("users").child(_userId).child("expense_"+(++recordNumber)).setValue(expense);
+                reference.child("users").child(_userId).child("expenses").child("expense_" + (recordNumber)).setValue(expense);
+//              //Success message
                 Toast.makeText(NewExpense.this, "Inserted Successfully...", Toast.LENGTH_SHORT).show();
                 //store the updated record_number in firebase
                 reference.child("users").child(_userId).child("record_number").setValue(recordNumber);

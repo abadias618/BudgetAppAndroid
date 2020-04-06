@@ -3,12 +3,21 @@ package com.byui.budgetappandroid;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Expense {
+    private int id;
     private String date;
     private String name;
     private double amount;
     private String category;
 
     public Expense() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDate() {

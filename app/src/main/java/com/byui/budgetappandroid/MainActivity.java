@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     //link buttons
     Button _newExpense;
     Button _settings;
+    Button _viewBudget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         _newExpense = findViewById(R.id.newExpenseButton);
         _settings = findViewById(R.id.settings);
+        _viewBudget = findViewById(R.id.viewBudgetButton);
 
         _newExpense.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), Settings.class));
+            }
+        });
+
+        _viewBudget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), ViewBudget.class));
             }
         });
     }
