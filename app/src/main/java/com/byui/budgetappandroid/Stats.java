@@ -3,19 +3,19 @@ package com.byui.budgetappandroid;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+/*
 import com.anychart.AnyChart;
 import com.anychart.AnyChartView;
 import com.anychart.chart.common.dataentry.DataEntry;
 import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Pie;
-
+*/
 import java.util.ArrayList;
 import java.util.List;
 
 public class Stats extends AppCompatActivity {
 
-    AnyChartView anyChartView;
+//    AnyChartView anyChartView;
 
     //This data will show in the Pie chart
     String[] months = {"Jan", "Feb", "Mar"};
@@ -26,10 +26,10 @@ public class Stats extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats);
 
-        anyChartView = findViewById(R.id.any_chart_view);
-        setupPieChart ();
+//        anyChartView = findViewById(R.id.any_chart_view);
+//        setupPieChart ();
     }
-
+/*
     // Set up pie method
     public void setupPieChart () {
 
@@ -46,4 +46,6 @@ public class Stats extends AppCompatActivity {
         pie.title("Earnings");
         anyChartView.setChart(pie);
     }
+
+ */
 }

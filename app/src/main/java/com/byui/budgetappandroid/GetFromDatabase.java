@@ -14,15 +14,15 @@ import java.util.List;
 
 public class GetFromDatabase {
 
-    private List<Expense> expenses = new ArrayList<>();
-    private int currentRecordsNumber;
+    private static List<Expense> expenses = new ArrayList<>();
+    private static int currentRecordsNumber;
     //firebase
-    private  String _userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private static String _userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     //Database handle
-    private DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+    private static DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
 
-    public List<Expense> getExpenseAllRecords() {
+    public static List<Expense> getExpenseAllRecords() {
 
         System.out.println("userID: "+_userId);
 
