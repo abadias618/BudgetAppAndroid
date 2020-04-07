@@ -1,6 +1,8 @@
 package com.byui.budgetappandroid;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,68 +27,65 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Settings extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
-    //
-    private String _oldCurrency;
+    String _oldCurrency;
     private String _pickedCurrency;
     private Button _returnButton, _submitButton, _logoutButton;
-    //firebase references
     private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
     //get a reference to the "users" level of the database
-    //DatabaseReference _user = FirebaseDatabase.getInstance().getReference("users");
-    //get the current user's id from Firebase
-    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    //private List<Expense> newExpenses;
+    DatabaseReference _user = FirebaseDatabase.getInstance().getReference("users");
+//    private List<Expense> newExpenses;
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        //Connect the activity to the XML script
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        //Connect to buttons from the XML script
         _returnButton = findViewById(R.id.returnFromSettings);
         _submitButton = findViewById(R.id.submit);
         _logoutButton = findViewById(R.id.logout);
-        //Intent intent = getIntent();
-        //final List<Expense> expenses = (ArrayList<Expense>) getIntent().getSerializableExtra("listOfExpenses");
-        //System.out.println("size of the data: "+ expenses.size());
 
-
-        //The user's login info
-        /*final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        //Save a copy of the user's info
+        final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         //If the user's not logged in, go back to the login page. Otherwise, continue.
         if (firebaseAuth.getCurrentUser() == null) {
             startActivity((new Intent(getApplicationContext(), Login.class)));
             finish();
-        }*/
+        }
 
+        //Save the current user's id
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-
-        //Event listener to read info from the database. In this case, that info is the current currency (in case we change it)
+        //Event listener to read info from the database.
         _database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //loop through all of the users
-                /*for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     //if the ID of our current user matches the one we're looking at, copy their
-                    //currency to a variable, then break out of the loop
+                    //currency to a variable, then break out of the loop.
+                    //This copy of the old currency will help us if the user changes their currency
                     if(ds.getKey().equals(userId)){
                         _oldCurrency = ds.child(userId).child("currency").getValue(String.class);
                         break;
                     }
-                }*/
-                _oldCurrency = String.valueOf(dataSnapshot.child("users").child(userId).child("currency").getValue());
-                System.out.println("old currency fetched right "+_oldCurrency);
+                }
             }
 
             @Override
@@ -116,37 +115,39 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         _submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
+                //If the user has picked a new currency
                 if(_pickedCurrency != null) {
-
                     //save new currency
-                    _database.child("users").child(userId).child("currency").setValue(_pickedCurrency);
-                    //call API through currencyConversion()
+                    _user.child(userId).child("currency").setValue(_pickedCurrency);
 
                     try {
-
-                        ArrayList<Double> newExpenses = currencyConversion();
-                        System.out.println("new expenses size: "+newExpenses.size());
-                        System.out.println("about to start for loop");
-                        for(int i = 1; i <= newExpenses.size(); i++){
-                            _database.child("users").child(userId).child("expenses").child("expense_" + i).child("amount").setValue(newExpenses.get(i - 1));
-                            System.out.println("inside the loop");
+                        //Retrieve a list of the user's expenses from the database
+                        List<Expense> expenses = (ArrayList<Expense>) getIntent().getSerializableExtra("listOfExpenses");
+                        Toast.makeText(Settings.this, String.valueOf(expenses.size()),
+                                Toast.LENGTH_SHORT).show();
+                        //Send the user's expenses to currencyConversion to receive a list of doubles.
+                        // These doubles are the amounts in the new currency.
+                        ArrayList<Double> newAmounts = currencyConversion(expenses);
+                        //Loop through each amount and add replace the old amount with the new one
+                        for(int i = 1; i <= newAmounts.size(); i++){
+                            _user.child(userId).child("expenses").child("expense_" + i).child("amount").setValue(newAmounts.get(i - 1));
                         }
-                        System.out.println("after for loop");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
 
-//                startActivity((new Intent(getApplicationContext(), MainActivity.class)));
-//                finish();
+                //Go back to the main activity
+                startActivity((new Intent(getApplicationContext(), MainActivity.class)));
+                finish();
 
             }
 
         });
-
         _returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
+                //Return to the main activity
                 startActivity((new Intent(getApplicationContext(), MainActivity.class)));
                 finish();
             }
@@ -156,6 +157,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         _logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Log the user out, then return to the login activity
                 FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
                 firebaseAuth.signOut();
                 startActivity(new Intent(getApplicationContext(), Login.class));
@@ -164,40 +166,28 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         });
     }
 
-    public ArrayList<Double> currencyConversion() throws IOException {
+    public ArrayList<Double> currencyConversion(final List<Expense> databaseExpenses) throws IOException {
         //Setting up the URL for the API. The end amount will be added later
         String url = ("https://data.fixer.io/api/latest?access_key=edbef9eb81e730c20186f2be117dec47");
-        final ArrayList<Double> finalNewExpenses = new ArrayList<Double>();
-
-        System.out.println("before creating request");
+        //An ArrayList to store our new values in
+        final ArrayList<Double> newAmounts = new ArrayList<Double>();
+        //Arrays with a length of one to store the conversion rates in
+        final double[] oldCur = new double[1];
+        final double[] newCur = new double[1];
         //Download each cost and concat to the end of the URL, replacing the original value
-        RequestQueue requestQueue = Volley.newRequestQueue(Settings.this);
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         //Retrieving the amount paid for the given expense
 
-        System.out.println("after creating request");
-
+        //API call
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-
+                //In the event that we get a response, try to retrieve the conversion rates
+                // from the API, and save them in the final double arrays above
                 try {
-                    List<Expense> databaseExpenses = (ArrayList<Expense>) getIntent().getSerializableExtra("listOfExpenses");
                     JSONObject rates = response.getJSONObject("rates");
-                        double oldCur = rates.getDouble(_oldCurrency);
-                        double newCur = rates.getDouble(_pickedCurrency);
-                    System.out.println("new and old rates successful fetch:" + _oldCurrency + " & " + _pickedCurrency);
-
-                    //Loop through each cost value stored in database
-                    double amount;
-                    double newAmount;
-                        for(int i = 0; i < databaseExpenses.size(); i++){
-                            amount = databaseExpenses.get(i).getAmount();
-                            newAmount = ((amount / oldCur) * newCur);
-                            System.out.println("new and old amounts successful:" + amount + " & " + newAmount);
-                            finalNewExpenses.add(newAmount);
-                        }
-                    System.out.println("return array size: " + finalNewExpenses.size());
-
+                        oldCur[0] = rates.getDouble(_oldCurrency);
+                        newCur[0] = rates.getDouble(_pickedCurrency);
 
                     Toast.makeText(Settings.this, "SUCCESS",
                             Toast.LENGTH_SHORT).show();
@@ -208,6 +198,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 }
             }
         },
+                //In the event of an error, print the error
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -215,18 +206,32 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                                 Toast.LENGTH_LONG).show();
                     }
                 }
-
         );
         requestQueue.add(objectRequest);
 
-        //execute logic here after the response is processed
+        //Loop through each cost value stored in database
+        for(int i = 0; i < databaseExpenses.size(); i++){
+            //retrieve the "amount" from the current Expense
+            double amount = databaseExpenses.get(i).getAmount();
+            //convert it to the new amount
+            double newAmount = ((amount / oldCur[0]) * newCur[0]);
+            Toast.makeText(Settings.this, String.valueOf(newAmount),
+                    Toast.LENGTH_SHORT).show();
+            //add the new price to the newAmounts array
+            newAmounts.add(newAmount);
+        }
 
-        return finalNewExpenses;
+
+        //return the newExpenses array, which contains all of the converted prices
+        return newAmounts;
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        //Find the string that the user picked using the spinner
         String selection = ((TextView)view).getText().toString();
+        //According to which string the user picked, set _pickedCurrency to the corresponding key.
+        //The choice needs to be stored as one of these keys in order for the API to understand any requests.
         switch (selection) {
             case "US Dollars":
                 _pickedCurrency = "USD";
@@ -238,6 +243,8 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 _pickedCurrency = "EUR";
                 break;
             default:
+                //If the user hasn't picked a currency, simply set it to the old currency.
+                //Worst case scenario, we set the currency back to itself.
                 _pickedCurrency = _oldCurrency;
         }
     }
