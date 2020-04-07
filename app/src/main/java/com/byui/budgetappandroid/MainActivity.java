@@ -3,9 +3,7 @@ package com.byui.budgetappandroid;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     Button _newExpense;
     Button _settings;
     Button _viewBudget;
+    Button _stats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         _newExpense = findViewById(R.id.newExpenseButton);
         _settings = findViewById(R.id.settings);
         _viewBudget = findViewById(R.id.viewBudgetButton);
+        _stats = findViewById(R.id.statsButton);
 
         _newExpense.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), SplashScreenActivity.class);
                 intent.putExtra("route","ViewBudget");
                 startActivity(intent);
+            }
+        });
+
+        _stats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), Stats.class));
             }
         });
     }
