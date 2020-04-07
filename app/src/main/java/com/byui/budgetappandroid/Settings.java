@@ -1,7 +1,9 @@
 package com.byui.budgetappandroid;
 
+import android.app.VoiceInteractor;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,14 +13,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -34,6 +48,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
     private Button _returnButton, _submitButton, _logoutButton;
     private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
     private FirebaseDatabase _databaseNoRef = FirebaseDatabase.getInstance();
+    private List<Expense> newExpenses;
     String userId;
 
     @Override
@@ -57,14 +72,20 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             finish();
         }
 
+        //get the current user's id from Firebase
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        final DatabaseReference user = _databaseNoRef.getReference("users");
-        user.addValueEventListener(new ValueEventListener() {
+        //get a reference to the "users" level of the database
+        final DatabaseReference _user = _databaseNoRef.getReference("users");
+        //Event listener to read info from the database. In this case, that info is the current currency (in case we change it)
+        _database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //loop through all of the users
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    if (ds.child("userId").getValue().equals(userId)) {
-                        _oldCurrency = ds.child("currency").getValue(String.class);
+                    //if the ID of our current user matches the one we're looking at, copy their
+                    //currency to a variable, then break out of the loop
+                    if(ds.getKey().equals(userId)){
+                        _oldCurrency = ds.child(userId).child("currency").getValue(String.class);
                         break;
                     }
                 }
@@ -77,14 +98,16 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         });
 
 
-        //Retrieve any input from the "currency" field
+        //Create a spinner for the activity
         Spinner spinner = findViewById(R.id.currencyInput);
+        //Create then populate a list for the spinner
         List<String> currencies = new ArrayList<>();
         currencies.add("Select");
         currencies.add("Euros");
         currencies.add("Aus Dollars");
         currencies.add("US Dollars");
 
+        //An array adapter to let us know when the user interacts with our spinner
         final ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -97,33 +120,23 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             public void onClick(View view){
                 if(_pickedCurrency != null) {
 
-                    //save new currency in a variable (returned by onItemSelected)
-                    user.child("currency").setValue(_pickedCurrency);
+                    //save new currency
+                    _user.child(userId).child("currency").setValue(_pickedCurrency);
                     //call API through currencyConversion()
-                    user.child("expenses").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                                Expense expense = snapshot.getValue(Expense.class);
-
-//                                Toast.makeText(Settings.this, expense.getCategory(),
-//                                        Toast.LENGTH_SHORT).show();
-                            }
+                    try {
+                        currencyConversion(GetFromDatabase.getExpenseAllRecords());
+                        int i = 0;
+                        for(Expense exp : newExpenses) {
+                            _user.child(userId).child("expenses").child("expense_" + i).setValue(exp);
+                            i++;
                         }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-//                    user.getRef("currency");
-//                    for(ArrayList expense : user.child("expenses")){
-//                  }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
-                startActivity((new Intent(getApplicationContext(), MainActivity.class)));
-                finish();
+//                startActivity((new Intent(getApplicationContext(), MainActivity.class)));
+//                finish();
 
             }
 
@@ -148,24 +161,48 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         });
     }
 
-    public void currencyConversion(String oldCurrency, String newCurrency) throws IOException {
-        //Setting up the URL for the API. NOTE: The "amount" value is not yet added to the URL string
-        URL url = new URL("http://data.fixer.io/api/convert?access_key=edbef9eb81e730c20186f2be117dec47&from="
-                + oldCurrency + "&to=" + newCurrency + "&amount=");
+    public void currencyConversion(final List<Expense> expenses) throws IOException {
+        //Setting up the URL for the API. The end amount will be added later
+        String url = ("https://data.fixer.io/api/latest?access_key=edbef9eb81e730c20186f2be117dec47");
 
         //Loop through each cost value stored in database
         //Download each cost and concat to the end of the URL, replacing the original value
-        //
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        //Retrieving the amount paid for the given expense
 
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
 
-        connection.setRequestMethod("GET");
+                try {
+                    JSONObject rates = response.getJSONObject("rates");
+                        Double oldCur = rates.getDouble(_oldCurrency);
+                        Double newCur = rates.getDouble(_pickedCurrency);
 
+                        for(Expense exp : expenses){
+                            Double amount = exp.getAmount();
+                            Double newAmount = ((amount / oldCur) * newCur);
+                            newExpenses.add(new Expense(newAmount));
+                        }
 
+                    Toast.makeText(Settings.this, "SUCCESS",
+                            Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(Settings.this, "New",
-                Toast.LENGTH_SHORT).show();
-
+                } catch (JSONException e) {
+                    Toast.makeText(Settings.this, "ERROR: " + e,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(Settings.this, "ERROR: " + error,
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+        requestQueue.add(objectRequest);
     }
 
     @Override
@@ -180,6 +217,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 break;
             case "Euros":
                 _pickedCurrency = "EUR";
+                break;
             default:
                 _pickedCurrency = _oldCurrency;
         }

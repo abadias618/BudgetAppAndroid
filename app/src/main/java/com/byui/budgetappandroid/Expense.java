@@ -11,6 +11,9 @@ public class Expense {
 
     public Expense() {
     }
+    public Expense(Double amount) {
+        this.amount = amount;
+    }
 
     public int getId() {
         return id;
