@@ -1,9 +1,6 @@
 package com.byui.budgetappandroid;
-
-import android.app.VoiceInteractor;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,7 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -27,30 +23,29 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Settings extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
-    String _oldCurrency;
+    //
+    private String _oldCurrency;
     private String _pickedCurrency;
     private Button _returnButton, _submitButton, _logoutButton;
+    //firebase references
     private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
     //get a reference to the "users" level of the database
-    DatabaseReference _user = FirebaseDatabase.getInstance().getReference("users");
-//    private List<Expense> newExpenses;
-    String userId;
+    //DatabaseReference _user = FirebaseDatabase.getInstance().getReference("users");
+    //get the current user's id from Firebase
+    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    //private List<Expense> newExpenses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,34 +56,37 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         _returnButton = findViewById(R.id.returnFromSettings);
         _submitButton = findViewById(R.id.submit);
         _logoutButton = findViewById(R.id.logout);
-        Intent intent = getIntent();
+        //Intent intent = getIntent();
+        //final List<Expense> expenses = (ArrayList<Expense>) getIntent().getSerializableExtra("listOfExpenses");
+        //System.out.println("size of the data: "+ expenses.size());
 
 
         //The user's login info
-        final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        /*final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         //If the user's not logged in, go back to the login page. Otherwise, continue.
         if (firebaseAuth.getCurrentUser() == null) {
             startActivity((new Intent(getApplicationContext(), Login.class)));
             finish();
-        }
+        }*/
 
-        //get the current user's id from Firebase
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
 
         //Event listener to read info from the database. In this case, that info is the current currency (in case we change it)
         _database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //loop through all of the users
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                /*for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     //if the ID of our current user matches the one we're looking at, copy their
                     //currency to a variable, then break out of the loop
                     if(ds.getKey().equals(userId)){
                         _oldCurrency = ds.child(userId).child("currency").getValue(String.class);
                         break;
                     }
-                }
+                }*/
+                _oldCurrency = String.valueOf(dataSnapshot.child("users").child(userId).child("currency").getValue());
+                System.out.println("old currency fetched right "+_oldCurrency);
             }
 
             @Override
@@ -121,17 +119,19 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 if(_pickedCurrency != null) {
 
                     //save new currency
-                    _user.child(userId).child("currency").setValue(_pickedCurrency);
+                    _database.child("users").child(userId).child("currency").setValue(_pickedCurrency);
                     //call API through currencyConversion()
-                    try {
-                        List<Expense> expenses = (ArrayList<Expense>) getIntent().getSerializableExtra("listOfExpenses");
-                        Toast.makeText(Settings.this, String.valueOf(expenses.size()),
-                                Toast.LENGTH_SHORT).show();
-                        ArrayList<Double> newExpenses = currencyConversion(expenses);
 
+                    try {
+
+                        ArrayList<Double> newExpenses = currencyConversion();
+                        System.out.println("new expenses size: "+newExpenses.size());
+                        System.out.println("about to start for loop");
                         for(int i = 1; i <= newExpenses.size(); i++){
-                            _user.child(userId).child("expenses").child("expense_" + i).child("amount").setValue(newExpenses.get(i - 1));
+                            _database.child("users").child(userId).child("expenses").child("expense_" + i).child("amount").setValue(newExpenses.get(i - 1));
+                            System.out.println("inside the loop");
                         }
+                        System.out.println("after for loop");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -143,6 +143,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             }
 
         });
+
         _returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
@@ -163,33 +164,39 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         });
     }
 
-    public ArrayList<Double> currencyConversion(final List<Expense> databaseExpenses) throws IOException {
+    public ArrayList<Double> currencyConversion() throws IOException {
         //Setting up the URL for the API. The end amount will be added later
         String url = ("https://data.fixer.io/api/latest?access_key=edbef9eb81e730c20186f2be117dec47");
         final ArrayList<Double> finalNewExpenses = new ArrayList<Double>();
 
+        System.out.println("before creating request");
         //Download each cost and concat to the end of the URL, replacing the original value
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        RequestQueue requestQueue = Volley.newRequestQueue(Settings.this);
         //Retrieving the amount paid for the given expense
 
+        System.out.println("after creating request");
 
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
                 try {
+                    List<Expense> databaseExpenses = (ArrayList<Expense>) getIntent().getSerializableExtra("listOfExpenses");
                     JSONObject rates = response.getJSONObject("rates");
                         double oldCur = rates.getDouble(_oldCurrency);
                         double newCur = rates.getDouble(_pickedCurrency);
+                    System.out.println("new and old rates successful fetch:" + _oldCurrency + " & " + _pickedCurrency);
 
                     //Loop through each cost value stored in database
+                    double amount;
+                    double newAmount;
                         for(int i = 0; i < databaseExpenses.size(); i++){
-                            double amount = databaseExpenses.get(i).getAmount();
-                            double newAmount = ((amount / oldCur) * newCur);
-                            Toast.makeText(Settings.this, String.valueOf(newAmount),
-                                    Toast.LENGTH_SHORT).show();
+                            amount = databaseExpenses.get(i).getAmount();
+                            newAmount = ((amount / oldCur) * newCur);
+                            System.out.println("new and old amounts successful:" + amount + " & " + newAmount);
                             finalNewExpenses.add(newAmount);
                         }
+                    System.out.println("return array size: " + finalNewExpenses.size());
 
 
                     Toast.makeText(Settings.this, "SUCCESS",
@@ -208,8 +215,11 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                                 Toast.LENGTH_LONG).show();
                     }
                 }
+
         );
         requestQueue.add(objectRequest);
+
+        //execute logic here after the response is processed
 
         return finalNewExpenses;
     }

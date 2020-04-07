@@ -115,7 +115,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                 for (int i = 1; i <= _currentRecordsNumber; i++) {
                     Expense expense = data.child("expenses").child("expense_"+i).getValue(Expense.class);
                     _expenses.add(expense);
-
                 }
                 //Create and Intent and pass our expenses ArrayList to the _route
                 if (_routeTo.equals("ViewBudget")) {
@@ -145,5 +144,15 @@ public class SplashScreenActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        try {
+            super.onDestroy();
+        }
+        catch ( Exception e) {
+            e.printStackTrace();
+        }
     }
 }
