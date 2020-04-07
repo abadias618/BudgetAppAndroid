@@ -1,8 +1,8 @@
 package com.byui.budgetappandroid;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-public class Expense {
+import java.io.Serializable;
+// implements serializable because it's later passed to an activity as a serialized object
+public class Expense implements Serializable {
     private int id;
     private String date;
     private String name;
@@ -12,13 +12,9 @@ public class Expense {
     public Expense() {
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setId(int id) { this.id = id; }
 
     public String getDate() {
         return date;
@@ -50,5 +46,17 @@ public class Expense {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    //for debugging
+    @Override
+    public String toString() {
+        return "Expense{" +
+                "id=" + id +
+                ", date='" + date + '\'' +
+                ", name='" + name + '\'' +
+                ", amount=" + amount +
+                ", category='" + category + '\'' +
+                '}';
     }
 }

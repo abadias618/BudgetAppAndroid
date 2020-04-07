@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
         _viewBudget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), ViewBudget.class));
+                Intent intent = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                intent.putExtra("route","ViewBudget");
+                startActivity(intent);
             }
         });
     }

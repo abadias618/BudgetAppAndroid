@@ -11,6 +11,7 @@ import java.util.List;
 
 public class ViewBudgetAdapter extends ArrayAdapter<Expense> {
 
+    //make sure constructor accepts a list
     public ViewBudgetAdapter (Context context, List<Expense> expenses) {
         super(context,0,expenses);
     }
@@ -25,9 +26,11 @@ public class ViewBudgetAdapter extends ArrayAdapter<Expense> {
                     R.layout.expense_item, parent, false
             );
         }
+
         Expense currentExpense = getItem(position);
+        //populate the fields with the the data from the current Expense
         TextView numberView = listItemView.findViewById(R.id.recordNumber);
-        numberView.setText(currentExpense.getId());
+        numberView.setText(String.valueOf(currentExpense.getId()));
 
         TextView nameView = listItemView.findViewById(R.id.recordName);
         nameView.setText(currentExpense.getName());
