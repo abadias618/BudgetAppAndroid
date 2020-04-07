@@ -128,6 +128,11 @@ public class SplashScreenActivity extends AppCompatActivity {
                     myIntent.putExtra("listOfExpenses", _expenses);
                     startActivity(myIntent);
                 }
+                else if (_routeTo.equals("Settings")) {
+                    Intent myIntent = new Intent(SplashScreenActivity.this, Settings.class);
+                    myIntent.putExtra("listOfExpenses", _expenses);
+                    startActivity(myIntent);
+                }
 
 
             }

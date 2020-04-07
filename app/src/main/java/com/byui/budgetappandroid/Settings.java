@@ -47,8 +47,9 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
     private String _pickedCurrency;
     private Button _returnButton, _submitButton, _logoutButton;
     private DatabaseReference _database = FirebaseDatabase.getInstance().getReference();
-    private FirebaseDatabase _databaseNoRef = FirebaseDatabase.getInstance();
-    private List<Expense> newExpenses;
+    //get a reference to the "users" level of the database
+    DatabaseReference _user = FirebaseDatabase.getInstance().getReference("users");
+//    private List<Expense> newExpenses;
     String userId;
 
     @Override
@@ -74,8 +75,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
 
         //get the current user's id from Firebase
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //get a reference to the "users" level of the database
-        final DatabaseReference _user = _databaseNoRef.getReference("users");
+
         //Event listener to read info from the database. In this case, that info is the current currency (in case we change it)
         _database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -123,16 +123,18 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                     //save new currency
                     _user.child(userId).child("currency").setValue(_pickedCurrency);
                     //call API through currencyConversion()
-                    /*try {
-                        currencyConversion(GetFromDatabase.getExpenseAllRecords());
-                        int i = 0;
-                        for(Expense exp : newExpenses) {
-                            _user.child(userId).child("expenses").child("expense_" + i).setValue(exp);
-                            i++;
+                    try {
+                        List<Expense> expenses = (ArrayList<Expense>) getIntent().getSerializableExtra("listOfExpenses");
+                        Toast.makeText(Settings.this, String.valueOf(expenses.size()),
+                                Toast.LENGTH_SHORT).show();
+                        ArrayList<Double> newExpenses = currencyConversion(expenses);
+
+                        for(int i = 1; i <= newExpenses.size(); i++){
+                            _user.child(userId).child("expenses").child("expense_" + i).child("amount").setValue(newExpenses.get(i - 1));
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }*/
+                    }
                 }
 
 //                startActivity((new Intent(getApplicationContext(), MainActivity.class)));
@@ -161,14 +163,15 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         });
     }
 
-    public void currencyConversion(final List<Expense> expenses) throws IOException {
+    public ArrayList<Double> currencyConversion(final List<Expense> databaseExpenses) throws IOException {
         //Setting up the URL for the API. The end amount will be added later
         String url = ("https://data.fixer.io/api/latest?access_key=edbef9eb81e730c20186f2be117dec47");
+        final ArrayList<Double> finalNewExpenses = new ArrayList<Double>();
 
-        //Loop through each cost value stored in database
         //Download each cost and concat to the end of the URL, replacing the original value
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         //Retrieving the amount paid for the given expense
+
 
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -176,14 +179,18 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
 
                 try {
                     JSONObject rates = response.getJSONObject("rates");
-                        Double oldCur = rates.getDouble(_oldCurrency);
-                        Double newCur = rates.getDouble(_pickedCurrency);
+                        double oldCur = rates.getDouble(_oldCurrency);
+                        double newCur = rates.getDouble(_pickedCurrency);
 
-                        for(Expense exp : expenses){
-                            Double amount = exp.getAmount();
-                            Double newAmount = ((amount / oldCur) * newCur);
-                            newExpenses.add(new Expense(newAmount));
+                    //Loop through each cost value stored in database
+                        for(int i = 0; i < databaseExpenses.size(); i++){
+                            double amount = databaseExpenses.get(i).getAmount();
+                            double newAmount = ((amount / oldCur) * newCur);
+                            Toast.makeText(Settings.this, String.valueOf(newAmount),
+                                    Toast.LENGTH_SHORT).show();
+                            finalNewExpenses.add(newAmount);
                         }
+
 
                     Toast.makeText(Settings.this, "SUCCESS",
                             Toast.LENGTH_SHORT).show();
@@ -203,6 +210,8 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 }
         );
         requestQueue.add(objectRequest);
+
+        return finalNewExpenses;
     }
 
     @Override
@@ -221,8 +230,6 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             default:
                 _pickedCurrency = _oldCurrency;
         }
-        Toast.makeText(Settings.this, _pickedCurrency,
-                Toast.LENGTH_SHORT).show();
     }
 
     @Override

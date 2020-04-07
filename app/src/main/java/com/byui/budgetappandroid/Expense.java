@@ -11,8 +11,12 @@ public class Expense implements Serializable {
 
     public Expense() {
     }
-    public Expense(Double amount) {
+    public Expense(double amount) {
+        id = 0;
+        date = "";
+        name = "";
         this.amount = amount;
+        category = "";
     }
 
     public int getId() { return id; }

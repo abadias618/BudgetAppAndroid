@@ -38,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
         _settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), Settings.class));
+                Intent intent = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                intent.putExtra("route","Settings");
+                startActivity(intent);
             }
         });
 
