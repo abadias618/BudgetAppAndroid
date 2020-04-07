@@ -1,6 +1,9 @@
 package com.byui.budgetappandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,10 +19,11 @@ import java.util.List;
 public class Stats extends AppCompatActivity {
 
     AnyChartView anyChartView;
+    Button _statsLabel;
 
     //This data will show in the Pie chart
-    String[] months = {"Jan", "Feb", "Mar"};
-    int[] earnings = { 500, 800, 2000};
+    String[] months = {"Income", "Expenses", "Debt/Savings"};
+    int[] earnings = { 50, 40, 10};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +31,17 @@ public class Stats extends AppCompatActivity {
         setContentView(R.layout.activity_stats);
 
         anyChartView = findViewById(R.id.any_chart_view);
+        _statsLabel = findViewById((R.id.statsLabel));
         setupPieChart ();
+
+        //sets up the back space button in the Stats
+        _statsLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                finish();
+            }
+        });
     }
 
     // Set up pie method
@@ -46,4 +60,6 @@ public class Stats extends AppCompatActivity {
         pie.title("Earnings");
         anyChartView.setChart(pie);
     }
+
+
 }
