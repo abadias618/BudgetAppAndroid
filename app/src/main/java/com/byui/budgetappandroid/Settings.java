@@ -123,7 +123,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                     //save new currency
                     _user.child(userId).child("currency").setValue(_pickedCurrency);
                     //call API through currencyConversion()
-                    try {
+                    /*try {
                         currencyConversion(GetFromDatabase.getExpenseAllRecords());
                         int i = 0;
                         for(Expense exp : newExpenses) {
@@ -132,7 +132,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 }
 
 //                startActivity((new Intent(getApplicationContext(), MainActivity.class)));
