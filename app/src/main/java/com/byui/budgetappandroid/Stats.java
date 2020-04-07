@@ -42,6 +42,8 @@ public class Stats extends AppCompatActivity {
                 finish();
             }
         });
+
+
     }
 
     // Set up pie method
