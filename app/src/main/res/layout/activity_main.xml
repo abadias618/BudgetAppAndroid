@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@+id/welcomeSubtitle" />
 
     <Button
-        android:id="@+id/editBudgetButton"
+        android:id="@+id/settings"
         android:layout_width="168dp"
         android:layout_height="158dp"
         android:layout_marginStart="30dp"
@@ -59,7 +59,7 @@
         android:background="@drawable/bg_button_white"
         android:drawableTop="@drawable/ic_edit_white_80dp"
         android:paddingTop="30dp"
-        android:text="Edit Budget"
+        android:text="Settings"
         android:textColor="#ffffff"
         android:textSize="20dp"
         app:layout_constraintEnd_toStartOf="@+id/statsButton"
@@ -106,7 +106,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/welcomeSubtitle" />
 
-    <Button
+    <!--<Button
         android:id="@+id/settings"
         android:layout_width="354dp"
         android:layout_height="73dp"
@@ -125,7 +125,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editBudgetButton" />
+        app:layout_constraintTop_toBottomOf="@+id/editBudgetButton" />-->
 
     <TextView
         android:id="@+id/welcomeSubtitle"
