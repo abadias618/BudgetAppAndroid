@@ -36,6 +36,7 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
     //firebase
     DatabaseReference reference;
     int recordNumber;
+    double balance;
     String _userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
     @Override
@@ -69,11 +70,12 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
 
         //Get number of item from database
 
-        reference.child("users").child(_userId).child("record_number").addValueEventListener(new ValueEventListener() {
+        reference.child("users").child(_userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    recordNumber = (int) (long) dataSnapshot.getValue();
+                    recordNumber = (int) (long) dataSnapshot.child("record_number").getValue();
+                    balance = (double) (long) dataSnapshot.child("balance").getValue();
                 }
             }
 
@@ -102,7 +104,6 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
                 expense.setDate(expenseDate);
                 expense.setName(expenseName);
                 expense.setAmount(expenseAmount);
-                //TODO: this might be a problem if the user clicks on the button before selecting something in the Spinner
                 expense.setCategory(_categorySpinner);
 
                 //insert object into Firebase
@@ -112,6 +113,9 @@ public class NewExpense extends AppCompatActivity implements AdapterView.OnItemS
                 //store the updated record_number in firebase
                 reference.child("users").child(_userId).child("record_number").setValue(recordNumber);
 
+                if (expense.getCategory().equals("Income")) {
+                    reference.child("users").child(_userId).child("balance").setValue(balance+expense.getAmount());
+                }
                 //reset the fields
                 _expenseName.getText().clear();
                 _expenseDate.getText().clear();
