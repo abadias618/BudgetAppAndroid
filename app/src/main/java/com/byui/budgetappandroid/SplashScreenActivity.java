@@ -73,7 +73,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         /**we can use the TaskCompletionSource to trigger
          * a placeholder task when the data is available*/
-        _reference.child("users").child(_userId).addValueEventListener(new ValueEventListener() {
+        _reference.child("users").child(_userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
